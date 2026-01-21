@@ -378,7 +378,7 @@ const carsData = [
     }
 ];
 
-const NUMERO_DIRECTO = "525539735554";
+const NUMERO_DIRECTO = "527292577708";
 const carsGrid = document.getElementById('cars-grid');
 const brandFilter = document.getElementById('brand-filter');
 const priceFilter = document.getElementById('price-filter');
@@ -439,8 +439,11 @@ function setupLightboxEvents() {
         });
         
         lightboxImg.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            requestAnimationFrame(() => handleZoomMove(e));
+            // Esto es crucial para que no se mueva la página web, sino la imagen
+            if (lightboxImg.classList.contains('zoomed')) {
+                e.preventDefault();
+                requestAnimationFrame(() => handleZoomMove(e));
+            }
         }, { passive: false });
         
         lightbox.addEventListener('click', (e) => {
@@ -514,6 +517,7 @@ function handleZoomMove(e) {
     
     let clientX, clientY;
     
+    // Detectar si es touch o mouse
     if (e.type === 'touchmove' || e.type === 'touchstart') {
         clientX = e.touches[0].clientX;
         clientY = e.touches[0].clientY;
@@ -525,8 +529,12 @@ function handleZoomMove(e) {
     const rect = lightboxImg.getBoundingClientRect();
     const x = clientX - rect.left;
     const y = clientY - rect.top;
+    
+    // Calcular porcentaje para mover el origen de la transformación
     const xPercent = (x / rect.width) * 100;
     const yPercent = (y / rect.height) * 100;
+    
+    // Aplicar transformación
     lightboxImg.style.transformOrigin = `${xPercent}% ${yPercent}%`;
 }
 
