@@ -439,7 +439,6 @@ function setupLightboxEvents() {
         });
         
         lightboxImg.addEventListener('touchmove', (e) => {
-            // Esto es crucial para que no se mueva la página web, sino la imagen
             if (lightboxImg.classList.contains('zoomed')) {
                 e.preventDefault();
                 requestAnimationFrame(() => handleZoomMove(e));
@@ -517,7 +516,6 @@ function handleZoomMove(e) {
     
     let clientX, clientY;
     
-    // Detectar si es touch o mouse
     if (e.type === 'touchmove' || e.type === 'touchstart') {
         clientX = e.touches[0].clientX;
         clientY = e.touches[0].clientY;
@@ -530,11 +528,9 @@ function handleZoomMove(e) {
     const x = clientX - rect.left;
     const y = clientY - rect.top;
     
-    // Calcular porcentaje para mover el origen de la transformación
     const xPercent = (x / rect.width) * 100;
     const yPercent = (y / rect.height) * 100;
     
-    // Aplicar transformación
     lightboxImg.style.transformOrigin = `${xPercent}% ${yPercent}%`;
 }
 
@@ -920,25 +916,46 @@ function showNotification(message, type = "success") {
 
 function setupSwipe() {
     const gallery = document.querySelector('.main-image-wrapper');
-    if (!gallery) return;
+    const lightboxContainer = document.getElementById('fullscreen-lightbox');
+    
+    const addListeners = (element) => {
+        if (!element) return;
+        
+        element.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
 
-    gallery.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, {passive: true});
+        element.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+    };
 
-    gallery.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, {passive: true});
+    addListeners(gallery);
+    addListeners(lightboxContainer);
 }
 
 function handleSwipe() {
     const threshold = 50; 
+    const lightbox = document.getElementById('fullscreen-lightbox');
+    const isLightboxOpen = lightbox && (lightbox.classList.contains('active') || lightbox.style.display === 'flex');
+
     if (touchEndX < touchStartX - threshold) {
-        nextImage();
+        if (isLightboxOpen) {
+            const nextBtn = document.getElementById('lightbox-next-btn');
+            if (nextBtn) nextBtn.click();
+        } else {
+            nextImage();
+        }
     }
+    
     if (touchEndX > touchStartX + threshold) {
-        prevImage();
+        if (isLightboxOpen) {
+            const prevBtn = document.getElementById('lightbox-prev-btn');
+            if (prevBtn) prevBtn.click();
+        } else {
+            prevImage();
+        }
     }
 }
 
