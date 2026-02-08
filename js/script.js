@@ -378,7 +378,8 @@ const carsData = [
     }
 ];
 
-const NUMERO_DIRECTO = "527292577708";
+const NUMERO_DIRECTO = "5555556644";
+const EMAIL_CONTACTO = "Concecionarios@gmaik.com";
 const carsGrid = document.getElementById('cars-grid');
 const brandFilter = document.getElementById('brand-filter');
 const priceFilter = document.getElementById('price-filter');
@@ -413,38 +414,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function setupLightboxEvents() {
     const mainImg = document.getElementById('modal-main-img');
-    
+
     if (mainImg) {
         mainImg.addEventListener('click', () => {
             openLightbox(mainImg.src);
         });
     }
-
     if (closeLightbox) {
         closeLightbox.addEventListener('click', closeLightboxFunc);
     }
-    
     if (btnZoomToggle) {
         btnZoomToggle.addEventListener('click', toggleLightboxZoom);
     }
-
     if (lightboxImg) {
         lightboxImg.addEventListener('click', (e) => {
             e.stopPropagation();
             toggleLightboxZoom(e);
         });
-        
         lightboxImg.addEventListener('mousemove', (e) => {
             requestAnimationFrame(() => handleZoomMove(e));
         });
-        
         lightboxImg.addEventListener('touchmove', (e) => {
             if (lightboxImg.classList.contains('zoomed')) {
                 e.preventDefault();
                 requestAnimationFrame(() => handleZoomMove(e));
             }
         }, { passive: false });
-        
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) {
                 closeLightboxFunc();
@@ -454,7 +449,7 @@ function setupLightboxEvents() {
 
     const lightboxPrev = document.getElementById('lightbox-prev-btn');
     const lightboxNext = document.getElementById('lightbox-next-btn');
-    
+
     if (lightboxPrev) {
         lightboxPrev.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -465,8 +460,8 @@ function setupLightboxEvents() {
             lightboxImg.src = currentModalImages[currentImageIndex];
             updateModalMainImage();
         });
+
     }
-    
     if (lightboxNext) {
         lightboxNext.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -481,6 +476,7 @@ function setupLightboxEvents() {
 }
 
 function openLightbox(src) {
+
     if (!lightbox) return;
     lightboxImg.src = src;
     lightbox.style.display = 'flex';
@@ -506,6 +502,7 @@ function toggleLightboxZoom(e) {
     e.stopPropagation();
     lightboxImg.classList.toggle('zoomed');
     btnZoomToggle.classList.toggle('active');
+    
     if (!lightboxImg.classList.contains('zoomed')) {
         lightboxImg.style.transformOrigin = 'center center';
     }
@@ -513,9 +510,7 @@ function toggleLightboxZoom(e) {
 
 function handleZoomMove(e) {
     if (!lightboxImg.classList.contains('zoomed')) return;
-    
     let clientX, clientY;
-    
     if (e.type === 'touchmove' || e.type === 'touchstart') {
         clientX = e.touches[0].clientX;
         clientY = e.touches[0].clientY;
@@ -523,11 +518,10 @@ function handleZoomMove(e) {
         clientX = e.clientX;
         clientY = e.clientY;
     }
-    
+
     const rect = lightboxImg.getBoundingClientRect();
     const x = clientX - rect.left;
     const y = clientY - rect.top;
-    
     const xPercent = (x / rect.width) * 100;
     const yPercent = (y / rect.height) * 100;
     
@@ -536,9 +530,7 @@ function handleZoomMove(e) {
 
 function renderCars(cars) {
     if (!carsGrid) return;
-    
     carsGrid.innerHTML = '';
-    
     if (cars.length === 0) {
         carsGrid.innerHTML = `
             <div style="text-align:center; color:white; grid-column:1/-1; padding: 60px;">
@@ -549,7 +541,6 @@ function renderCars(cars) {
         `;
         return;
     }
-    
     const fragment = document.createDocumentFragment();
     cars.forEach((car, index) => {
         const card = createCarCard(car);
@@ -563,8 +554,7 @@ function createCarCard(car) {
     const card = document.createElement('div');
     card.className = 'car-card';
     const isNew = car.year >= 2024;
-    const imagePath = `images/${car.imageBase}1${car.imageExtension}`;
-    
+    const imagePath = `../images/${car.imageBase}1${car.imageExtension}`;
     card.innerHTML = `
         ${isNew ? '<div class="car-badge">NUEVO</div>' : ''}
         <div class="car-image-container">
@@ -589,16 +579,13 @@ function createCarCard(car) {
 
 function filterCars() {
     if (!carsGrid) return;
-    
     const brandValue = brandFilter.value;
     const priceValue = priceFilter.value;
     const sortValue = sortFilter.value;
-    
     let filtered = carsData.filter(car => {
         const matchBrand = brandValue === 'all' || car.brand === brandValue;
         let matchPrice = true;
         const price = parseFloat(car.price);
-        
         if (priceValue === 'low') {
             matchPrice = price < 5;
         } else if (priceValue === 'mid') {
@@ -606,15 +593,12 @@ function filterCars() {
         } else if (priceValue === 'high') {
             matchPrice = price > 10;
         }
-        
         return matchBrand && matchPrice;
     });
-    
     if (sortValue !== 'default') {
         filtered.sort((a, b) => {
             const priceA = parseFloat(a.price);
             const priceB = parseFloat(b.price);
-            
             switch(sortValue) {
                 case 'price-asc':
                     return priceA - priceB;
@@ -627,31 +611,23 @@ function filterCars() {
             }
         });
     }
-    
     renderCars(filtered);
 }
 
 window.openModal = function(id) {
     if (!modal) return;
-    
     const car = carsData.find(c => c.id === id);
     if (!car) return;
-    
     currentCarData = car;
-    
     currentModalImages = [];
     for (let i = 1; i <= car.totalImages; i++) {
-        currentModalImages.push(`images/${car.imageBase}${i}${car.imageExtension}`);
+        currentModalImages.push(`../images/${car.imageBase}${i}${car.imageExtension}`);
     }
     currentImageIndex = 0;
-
     updateModalMainImage();
-    
     document.getElementById('modal-title').innerText = `${car.brand} ${car.model}`;
     document.getElementById('modal-price').innerText = `$${car.price} ${car.priceUnit}`;
-    
     renderThumbnails();
-
     const specsHTML = `
         <div class="spec-item"><span>Año</span><strong>${car.year}</strong></div>
         <div class="spec-item"><span>Kilómetros</span><strong>${car.kilometers} km</strong></div>
@@ -663,15 +639,12 @@ window.openModal = function(id) {
         <div class="spec-item"><span>Velocidad Máx</span><strong>${car.specs.velocidadMax}</strong></div>
     `;
     document.getElementById('modal-specs').innerHTML = specsHTML;
-
     document.getElementById('modal-features').innerHTML = car.features.map(f => `<li>${f}</li>`).join('');
-    
     const whatsappBtn = document.getElementById('modal-whatsapp');
-    const message = `Hola, me interesa el ${car.brand} ${car.model} (${car.year}) que vi en su inventario.`;
+    const message = `Hola, me interesa el ${car.brand} ${car.model} (${car.year}) que vi en su inventario de The Collection.`;
     if(whatsappBtn) {
         whatsappBtn.href = `https://wa.me/${NUMERO_DIRECTO}?text=${encodeURIComponent(message)}`;
     }
-
     modal.style.display = 'block';
     if (!lightbox || lightbox.style.display === 'none') {
         document.body.style.overflow = 'hidden';
@@ -682,11 +655,9 @@ function updateModalMainImage() {
     const mainImg = document.getElementById('modal-main-img');
     mainImg.style.opacity = '0.8';
     mainImg.src = currentModalImages[currentImageIndex];
-    
     setTimeout(() => {
         mainImg.style.opacity = '1';
     }, 150);
-
     const thumbs = document.querySelectorAll('.gallery-thumbnails img');
     thumbs.forEach((img, idx) => {
         if(idx === currentImageIndex) img.classList.add('active');
@@ -740,16 +711,6 @@ function setupSmoothScroll() {
             }
         });
     });
-    
-    const scrollIndicator = document.querySelector('.scroll-indicator');
-    if (scrollIndicator) {
-        scrollIndicator.addEventListener('click', () => {
-            const target = document.querySelector('#ubicacion') || document.querySelector('#catalogo');
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-            }
-        });
-    }
 }
 
 function setupContactForm() {
@@ -757,7 +718,6 @@ function setupContactForm() {
     if (contactForm) {
         contactForm.addEventListener('submit', handleContactSubmit);
     }
-    
     if (closeModalBtns) {
         closeModalBtns.forEach(btn => {
             btn.onclick = function() {
@@ -766,7 +726,6 @@ function setupContactForm() {
             };
         });
     }
-    
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
@@ -777,32 +736,25 @@ function setupContactForm() {
 
 function handleContactSubmit(e) {
     e.preventDefault();
-    
     const form = e.target;
     if (!form.checkValidity()) {
         showNotification("Por favor completa los campos requeridos.", "error");
         return;
     }
-    
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
     submitBtn.disabled = true;
-    
     const nombre = form.querySelector('input[placeholder="Nombre Completo"]').value;
-    const correo = form.querySelector('input[placeholder="Correo Electrónico"]').value;
     const telefono = form.querySelector('input[placeholder="Teléfono (10 dígitos)"]').value;
     const selectInteres = document.getElementById('car-interest');
     const autoInteres = selectInteres.options[selectInteres.selectedIndex].text;
     const mensajeUsuario = form.querySelector('textarea').value;
-    
-    const textoWhatsapp = `*Hola Global Car Metepec* 🚘%0A%0A👤 *Nombre:* ${nombre}%0A📧 *Correo:* ${correo}%0A📱 *Tel:* ${telefono}%0A🚗 *Interés:* ${autoInteres}%0A💬 *Mensaje:* ${mensajeUsuario}`;
-    
+    const textoWhatsapp = `*Hola The Collection* 🚘%0A%0A👤 *Nombre:* ${nombre}%0A📧 *Correo:* ${EMAIL_CONTACTO}%0A📱 *Tel:* ${telefono}%0A🚗 *Interés:* ${autoInteres}%0A💬 *Mensaje:* ${mensajeUsuario}`;
     setTimeout(() => {
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         const baseUrl = isMobile ? "https://api.whatsapp.com/send" : "https://web.whatsapp.com/send";
         window.open(`${baseUrl}?phone=${NUMERO_DIRECTO}&text=${textoWhatsapp}`, '_blank');
-        
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
         form.reset();
@@ -816,7 +768,6 @@ function setupNewsletter() {
         newsletterBtn.addEventListener('click', function(e) {
             e.preventDefault();
             const input = this.parentElement.querySelector('input');
-            
             if (input.value.includes('@')) {
                 showNotification("¡Gracias por suscribirte!", "success");
                 input.value = '';
@@ -830,12 +781,10 @@ function setupNewsletter() {
 function setupMobileMenu() {
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
-    
     if (hamburger && navLinks) {
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('active');
             const icon = hamburger.querySelector('i');
-            
             if (navLinks.classList.contains('active')) {
                 icon.classList.replace('fa-bars', 'fa-times');
                 document.body.style.overflow = 'hidden';
@@ -844,123 +793,40 @@ function setupMobileMenu() {
                 document.body.style.overflow = 'auto';
             }
         });
-        
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                hamburger.querySelector('i').classList.replace('fa-times', 'fa-bars');
-                document.body.style.overflow = 'auto';
-            });
-        });
     }
 }
 
-let lastScroll = 0;
-let ticking = false;
-
-window.addEventListener('scroll', () => {
-    if (!ticking) {
-        window.requestAnimationFrame(() => {
-            updateNavbar();
-            ticking = false;
-        });
-        ticking = true;
-    }
-});
-
 function updateNavbar() {
     const header = document.getElementById('navbar');
-    const currentScroll = window.pageYOffset;
-    
-    if (currentScroll > 100) {
+    if (window.pageYOffset > 100) {
         header.style.backgroundColor = 'rgba(10, 10, 10, 0.98)';
-        header.style.backdropFilter = 'blur(10px)';
-        header.style.padding = '15px 0';
-        header.style.boxShadow = '0 5px 20px rgba(0,0,0,0.3)';
-        
-        if (currentScroll > lastScroll && currentScroll > 200) {
-            header.style.transform = 'translateY(-100%)';
-        } else {
-            header.style.transform = 'translateY(0)';
-        }
     } else {
         header.style.backgroundColor = 'transparent';
-        header.style.backdropFilter = 'none';
-        header.style.padding = '20px 0';
-        header.style.boxShadow = 'none';
-        header.style.transform = 'translateY(0)';
     }
-    
-    lastScroll = currentScroll;
 }
 
 function showNotification(message, type = "success") {
     const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed; top: 90px; right: 20px; 
-        background: ${type === 'success' ? '#4CAF50' : '#f44336'}; 
-        color: white; padding: 15px 25px; border-radius: 8px; 
-        z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        font-family: sans-serif; animation: slideIn 0.3s ease;
-    `;
+    notification.style.cssText = `position: fixed; top: 90px; right: 20px; background: ${type === 'success' ? '#4CAF50' : '#f44336'}; color: white; padding: 15px 25px; border-radius: 8px; z-index: 9999; box-shadow: 0 4px 12px rgba(0,0,0,0.3); font-family: sans-serif;`;
     notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check' : 'fa-exclamation'}"></i> ${message}`;
     document.body.appendChild(notification);
-    
     setTimeout(() => {
         notification.style.opacity = '0';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+        setTimeout(() => { notification.remove(); }, 300);
     }, 3000);
 }
 
 function setupSwipe() {
     const gallery = document.querySelector('.main-image-wrapper');
-    const lightboxContainer = document.getElementById('fullscreen-lightbox');
-    
-    const addListeners = (element) => {
-        if (!element) return;
-        
-        element.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
-        element.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, {passive: true});
-    };
-
-    addListeners(gallery);
-    addListeners(lightboxContainer);
-}
-
-function handleSwipe() {
-    const threshold = 50; 
-    const lightbox = document.getElementById('fullscreen-lightbox');
-    const isLightboxOpen = lightbox && (lightbox.classList.contains('active') || lightbox.style.display === 'flex');
-
-    if (touchEndX < touchStartX - threshold) {
-        if (isLightboxOpen) {
-            const nextBtn = document.getElementById('lightbox-next-btn');
-            if (nextBtn) nextBtn.click();
-        } else {
-            nextImage();
-        }
-    }
-    
-    if (touchEndX > touchStartX + threshold) {
-        if (isLightboxOpen) {
-            const prevBtn = document.getElementById('lightbox-prev-btn');
-            if (prevBtn) prevBtn.click();
-        } else {
-            prevImage();
-        }
-    }
+    if (!gallery) return;
+    gallery.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+    gallery.addEventListener('touchend', e => { 
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchEndX < touchStartX - 50) nextImage();
+        if (touchEndX > touchStartX + 50) prevImage();
+    }, {passive: true});
 }
 
 document.addEventListener('contextmenu', e => {
-    if (e.target.tagName === 'IMG') {
-        e.preventDefault();
-    }
+    if (e.target.tagName === 'IMG') { e.preventDefault(); }
 });
