@@ -1,1 +1,17 @@
+# Entorno de desarrollo
+.vscode/
+*.code-workspace
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store
+
+# Logs y temporales
+*.log
+npm-debug.log*
+
+# Si llegas a usar node_modules en el futuro
+node_modules/
+
+# Archivos de configuración de linters
 .hintrc
